@@ -16,7 +16,7 @@ use Alexcicioc\SwaggerRouter\Middlewares\SwaggerRawHandler;
 use Alexcicioc\SwaggerRouter\SwaggerRequest;
 use Alexcicioc\SwaggerRouter\SwaggerResponse;
 
-function handleException(Exception $exception, int $statusCode = 500
+function handleException(Exception $exception, int $statusCode = 500)
     $responseBody = new \stdClass();
     $responseBody->message = $exception->getMessage();
     if (DEBUG_MODE) {
@@ -30,16 +30,15 @@ function handleException(Exception $exception, int $statusCode = 500
 
 try {
     $app = new SwaggerRouter();
-    $app->use(new SpecParser(SPEC_PATH));
+    $app->use(new SpecParser(SPEC_PATH)); # Path to swagger.json
     $app->use(new SwaggerRawHandler());
     $app->use(new RouteValidator());
     $app->use(new ParamsHandler());
-    $app->use(new OAuth(AuthorizationFactory::makeResourceServer()));
+    $app->use(new OAuth(AuthorizationFactory::makeResourceServer())); # This is optional, only if you use oauth
     $app->use(new RequestValidator());
-    $app->use(new Router('\App\Api\Controllers'));
+    $app->use(new Router('\App\Api\Controllers')); # Controllers namespace (must be PSR-4 compliant
     $app->use(new ResponseHandler());
     $app->use(new ResponseValidator());
-
 
     $response = $app(SwaggerRequest::fromGlobals(), new SwaggerResponse());
     $response->send();
