@@ -1,5 +1,11 @@
 # swagger-router
 
+Swagger Router handles routing, parameter type/format transformation, request validation, response validation based on your swagger spec.
+
+It's currently 85% open api 2.0 compliant (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) and not properly tested, so use it at your own risk.
+
+Sample usage:
+
 ```php
 use App\Services\Auth\AuthorizationFactory;
 use Alexcicioc\SwaggerRouter\App;
