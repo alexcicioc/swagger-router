@@ -4,7 +4,7 @@ Swagger Router handles routing, parameter type/format transformation, request va
 
 It's currently 85% open api 2.0 compliant (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) and not properly tested, so use it at your own risk.
 
-Sample usage:
+# Sample usage:
 
 ```php
 use App\Services\Auth\AuthorizationFactory;
@@ -54,4 +54,48 @@ try {
     handleException($e);
 }
 
+```
+# Sample spec:
+https://github.com/alexcicioc/swagger-router/blob/master/spec.json
+
+# Sample controller
+
+```php
+
+namespace App\Api\Controllers;
+
+use App\Api\Domains\Course\CourseDomain;
+use Alexcicioc\SwaggerRouter\SwaggerRequest;
+use Alexcicioc\SwaggerRouter\SwaggerResponse;
+
+class Courses extends Controller
+{
+    const COURSE_PUBLIC_FIELDS = [
+        'id', 'title', 'shortDescription', 'longDescription', 'technology',
+        'startDate', 'totalSessions', 'imageUrl', 'location', 'status'
+    ];
+
+    public function getCourses(SwaggerRequest $request, SwaggerResponse $response): SwaggerResponse
+    {
+        $filters = $request->getParams(['technology']);
+        $limit = $request->getParam('limit');
+        $startIndex = $request->getParam('startIndex');
+
+        $courses = CourseDomain::getAll($filters, $startIndex, $limit);
+        $results = array_map(function (CourseDomain $courseDomain) {
+            return $courseDomain->toResponse(self::COURSE_PUBLIC_FIELDS);
+        }, $courses);
+
+        return $response->withStatus(200)->body((object)['results' => $results));
+
+    }
+    
+    public function getCourse(SwaggerRequest $request, SwaggerResponse $response): SwaggerResponse
+    {
+        $courseId = $request->getParam('courseId');
+        $course = CourseDomain::getById($courseId);
+        return $response->withStatus(200)
+            ->body($course->toResponse(self::COURSE_PUBLIC_FIELDS));
+    }
+}
 ```
