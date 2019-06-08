@@ -1,0 +1,20 @@
+{
+  "name": "alexcicioc/swagger-router",
+  "type": "library",
+  "require": {
+    "guzzlehttp/psr7": "^1.5",
+    "league/oauth2-server": "^7.4"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alex Cicioc",
+      "email": "alex.cicioc1@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Alexcicioc\\SwaggerRouter\\": "src/"
+    }
+  }
+}
