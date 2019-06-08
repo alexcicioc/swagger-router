@@ -1,0 +1,1352 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "Courses API"
+  },
+  "basePath": "/api",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+  "tags": [
+    {
+      "name": "courses",
+      "description": "Courses resources"
+    },
+    {
+      "name": "students",
+      "description": "Students resources"
+    },
+    {
+      "name": "authentication",
+      "description": "Authentication resources"
+    },
+    {
+      "name": "account-management",
+      "description": "Authentication resources"
+    }
+  ],
+  "paths": {
+    "/swagger": {
+      "x-swagger-pipe": "swagger_raw"
+    },
+    "/access_token": {
+      "x-swagger-router-controller": "Authentication",
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "description": "Authenticate the user",
+        "operationId": "generateAccessToken",
+        "parameters": [
+          {
+            "$ref": "#/parameters/authenticationBody"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AccessTokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/student": {
+      "x-swagger-router-controller": "Students",
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "authentication"
+        ],
+        "description": "Get the authenticated student data",
+        "operationId": "getStudent",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/StudentResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/courses": {
+      "x-swagger-router-controller": "Courses",
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "description": "Returns a list of courses",
+        "operationId": "getCourses",
+        "parameters": [
+          {
+            "$ref": "#/parameters/technologyQuery"
+          },
+          {
+            "$ref": "#/parameters/limitQuery"
+          },
+          {
+            "$ref": "#/parameters/startIndexQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CourseList"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/courses/{courseId}": {
+      "x-swagger-router-controller": "Courses",
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "description": "Returns a course",
+        "operationId": "getCourse",
+        "parameters": [
+          {
+            "$ref": "#/parameters/courseIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Course"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/courses/{courseId}/registration": {
+      "x-swagger-router-controller": "CourseRegistration",
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "courses"
+        ],
+        "description": "Get course registration details",
+        "operationId": "getRegistrationDetails",
+        "parameters": [
+          {
+            "$ref": "#/parameters/courseIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "properties": {
+                "isRegistered": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "courses"
+        ],
+        "description": "Register for a course",
+        "operationId": "joinCourse",
+        "parameters": [
+          {
+            "$ref": "#/parameters/courseIdPath"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Joined course"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Already joined"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "courses"
+        ],
+        "description": "Delete course registration",
+        "operationId": "leaveCourse",
+        "parameters": [
+          {
+            "$ref": "#/parameters/courseIdPath"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Left course"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/courses/{courseId}/sessions": {
+      "x-swagger-router-controller": "CourseSessions",
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "courses"
+        ],
+        "description": "Returns a list of course sessions",
+        "operationId": "getCourseSessions",
+        "parameters": [
+          {
+            "$ref": "#/parameters/courseIdPath"
+          },
+          {
+            "$ref": "#/parameters/limitQuery"
+          },
+          {
+            "$ref": "#/parameters/startIndexQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CourseSessionList"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}/homework": {
+      "x-swagger-router-controller": "SessionHomework",
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get session homework",
+        "operationId": "getHomework",
+        "parameters": [
+          {
+            "$ref": "#/parameters/sessionIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/HomeworkResponse"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "405": {
+            "description": "Not registered to the course"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "courses"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "description": "Uploads a homework",
+        "operationId": "uploadHomework",
+        "parameters": [
+          {
+            "$ref": "#/parameters/sessionIdPath"
+          },
+          {
+            "in": "formData",
+            "name": "homework",
+            "type": "file",
+            "description": "The file to upload.",
+            "x-mimetype": "application/zip",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/GenericCreatedResponse"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "405": {
+            "description": "Not registered to the course"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}/resources": {
+      "x-swagger-router-controller": "SessionResources",
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Returns a list of course session resources",
+        "operationId": "getResources",
+        "parameters": [
+          {
+            "$ref": "#/parameters/sessionIdPath"
+          },
+          {
+            "$ref": "#/parameters/limitQuery"
+          },
+          {
+            "$ref": "#/parameters/startIndexQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SessionResourceList"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "405": {
+            "description": "Not registered to the course"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/resources/{resourceId}/comments": {
+      "x-swagger-router-controller": "ResourceComments",
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Returns a list of resource comments",
+        "operationId": "getResourceComments",
+        "parameters": [
+          {
+            "$ref": "#/parameters/resourceIdPath"
+          },
+          {
+            "$ref": "#/parameters/limitQuery"
+          },
+          {
+            "$ref": "#/parameters/startIndexQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/CommentsList"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "405": {
+            "description": "Not registered to the course"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "courses"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Post comment on a resource",
+        "operationId": "createResourceComment",
+        "parameters": [
+          {
+            "$ref": "#/parameters/resourceIdPath"
+          },
+          {
+            "in": "body",
+            "name": "comment",
+            "schema": {
+              "properties": {
+                "resourceId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "text": {
+                  "type": "string"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/GenericCreatedResponse"
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "405": {
+            "description": "Not registered to the course"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/students": {
+      "x-swagger-router-controller": "Students",
+      "post": {
+        "tags": [
+          "students"
+        ],
+        "description": "Adds a new student",
+        "operationId": "createStudent",
+        "parameters": [
+          {
+            "$ref": "#/parameters/studentBody"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/GenericCreatedResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "409": {
+            "description": "Conflict, email is not unique",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/students/{studentId}": {
+      "x-swagger-router-controller": "Students",
+      "put": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "students"
+        ],
+        "description": "Change student data",
+        "operationId": "editStudent",
+        "parameters": [
+          {
+            "$ref": "#/parameters/studentIdPath"
+          },
+          {
+            "$ref": "#/parameters/studentUpdateBody"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Updated",
+            "schema": {
+              "$ref": "#/definitions/Student"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/email-validation/confirm": {
+      "x-swagger-router-controller": "EmailValidation",
+      "post": {
+        "tags": [
+          "account-management"
+        ],
+        "description": "Validate student",
+        "operationId": "confirm",
+        "parameters": [
+          {
+            "$ref": "#/parameters/emailValidationBody"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Validation is successful"
+          },
+          "404": {
+            "description": "Bad validation code"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/email-validation/resend": {
+      "x-swagger-router-controller": "EmailValidation",
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "account-management"
+        ],
+        "description": "Validate student",
+        "operationId": "resend",
+        "responses": {
+          "204": {
+            "description": "Validation email sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "405": {
+            "description": "Account is already active"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/reset-password": {
+      "x-swagger-router-controller": "ResetPassword",
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "account-management"
+        ],
+        "description": "Reset password",
+        "operationId": "resetPassword",
+        "responses": {
+          "204": {
+            "description": "Password reset email sent"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/reset-password/confirm": {
+      "x-swagger-router-controller": "ResetPassword",
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "account-management"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/resetPasswordConfirmBody"
+          }
+        ],
+        "description": "Reset password",
+        "operationId": "changePassword",
+        "responses": {
+          "204": {
+            "description": "Password reset email sent"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "CourseList": {
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Course"
+          }
+        }
+      },
+      "required": [
+        "results"
+      ]
+    },
+    "CommentsList": {
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      },
+      "required": [
+        "results"
+      ]
+    },
+    "CourseSessionList": {
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CourseSession"
+          }
+        }
+      },
+      "required": [
+        "results"
+      ]
+    },
+    "SessionResourceList": {
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SessionResource"
+          }
+        }
+      },
+      "required": [
+        "results"
+      ]
+    },
+    "GenericCreatedResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Resource id"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "AccessTokenResponse": {
+      "properties": {
+        "token_type": {
+          "description": "Token type",
+          "type": "string",
+          "enum": [
+            "Bearer"
+          ]
+        },
+        "expires_in": {
+          "description": "Expiration time in seconds",
+          "type": "integer",
+          "minimum": 0
+        },
+        "access_token": {
+          "description": "Token used for authentication",
+          "type": "string"
+        },
+        "refresh_token": {
+          "description": "TODO figure out what to do with this",
+          "type": "string"
+        }
+      }
+    },
+    "HomeworkResponse": {
+      "properties": {
+        "id": {
+          "description": "Homework id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "filePath": {
+          "description": "Homework file path",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "Date time when the homework was uploaded",
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "StudentResponse": {
+      "properties": {
+        "id": {
+          "description": "Student id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "email": {
+          "description": "Student email. used for login",
+          "type": "string",
+          "format": "email",
+          "maxLength": 255
+        },
+        "accountStatus": {
+          "description": "Account status",
+          "type": "string",
+          "enum": [
+            "inactive",
+            "active",
+            "banned"
+          ]
+        },
+        "firstName": {
+          "description": "Student first name",
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 2
+        },
+        "lastName": {
+          "description": "Student last name",
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 2
+        },
+        "phone": {
+          "description": "Student phone",
+          "type": "string",
+          "maxLength": 255
+        },
+        "currentOccupation": {
+          "description": "Current occupation",
+          "type": "string",
+          "maxLength": 255
+        },
+        "availableForHire": {
+          "description": "Hire availability",
+          "type": "boolean",
+          "default": false
+        },
+        "hasLaptop": {
+          "description": "Student laptop ownership",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "id",
+        "accountStatus",
+        "firstName",
+        "lastName",
+        "email",
+        "phone"
+      ]
+    },
+    "Course": {
+      "properties": {
+        "id": {
+          "description": "Course id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "description": "Course title",
+          "type": "string",
+          "maxLength": 255
+        },
+        "shortDescription": {
+          "description": "Short description",
+          "type": "string",
+          "maxLength": 255
+        },
+        "longDescription": {
+          "description": "Long description",
+          "type": "string"
+        },
+        "technology": {
+          "description": "Course technology",
+          "type": "string",
+          "maxLength": 255
+        },
+        "startDate": {
+          "description": "Course start date",
+          "type": "string",
+          "format": "date-time"
+        },
+        "visible": {
+          "description": "Visibility flag",
+          "type": "boolean",
+          "default": false
+        },
+        "totalSessions": {
+          "description": "The total number of sessions",
+          "type": "integer",
+          "minimum": 1
+        },
+        "imageUrl": {
+          "description": "Event image url",
+          "type": "string"
+        },
+        "location": {
+          "description": "Course location",
+          "type": "string"
+        },
+        "status": {
+          "description": "Course status",
+          "type": "string",
+          "enum": [
+            "not-started",
+            "in-progress",
+            "complete"
+          ],
+          "default": "not-started"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "technology",
+        "shortDescription",
+        "longDescription",
+        "status",
+        "imageUrl",
+        "location",
+        "startDate"
+      ]
+    },
+    "CourseSession": {
+      "properties": {
+        "id": {
+          "description": "Session id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "courseId": {
+          "description": "Course id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "description": "Session title",
+          "type": "string",
+          "maxLength": 255
+        },
+        "shortDescription": {
+          "description": "Short description",
+          "type": "string",
+          "maxLength": 255
+        },
+        "longDescription": {
+          "description": "Long description",
+          "type": "string"
+        },
+        "scheduledDateTime": {
+          "description": "Session date",
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "courseId",
+        "title",
+        "shortDescription",
+        "scheduledDateTime"
+      ]
+    },
+    "Comment": {
+      "properties": {
+        "id": {
+          "description": "Unique identifier",
+          "type": "integer",
+          "minimum": 1
+        },
+        "resourceId": {
+          "description": "Resource id",
+          "type": "integer",
+          "minimum": 1
+        },
+        "authorName": {
+          "description": "Comment author",
+          "type": "string"
+        },
+        "text": {
+          "description": "Comment text",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "Comment create date",
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "authorName",
+        "text",
+        "created_at"
+      ]
+    },
+    "Student": {
+      "properties": {
+        "email": {
+          "description": "Student email. used for login",
+          "type": "string",
+          "format": "email",
+          "maxLength": 255
+        },
+        "password": {
+          "description": "Login password",
+          "type": "string",
+          "format": "password",
+          "maxLength": 64,
+          "minLength": 4
+        },
+        "accountStatus": {
+          "description": "Account status",
+          "type": "string",
+          "enum": [
+            "inactive",
+            "active",
+            "banned"
+          ],
+          "default": "inactive"
+        },
+        "firstName": {
+          "description": "Student first name",
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 2
+        },
+        "lastName": {
+          "description": "Student last name",
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 2
+        },
+        "phone": {
+          "description": "Student phone",
+          "type": "string",
+          "maxLength": 255
+        },
+        "currentOccupation": {
+          "description": "Current occupation",
+          "type": "string",
+          "maxLength": 255
+        },
+        "referral": {
+          "description": "Referral",
+          "type": "string",
+          "maxLength": 255
+        },
+        "availableForHire": {
+          "description": "Hire availability",
+          "type": "boolean",
+          "default": false
+        },
+        "hasLaptop": {
+          "description": "Student laptop ownership",
+          "type": "boolean",
+          "default": false
+        },
+        "previouslyAttended": {
+          "description": "Has the student previously attended the courses",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "email",
+        "password",
+        "phone"
+      ]
+    },
+    "SessionResource": {
+      "properties": {
+        "sessionId": {
+          "description": "Session id, reference to courseSessions.id",
+          "type": "integer",
+          "minimum": 0
+        },
+        "resourceType": {
+          "description": "Resource type",
+          "type": "string",
+          "enum": [
+            "homework",
+            "video",
+            "documentation"
+          ],
+          "default": "homework"
+        },
+        "content": {
+          "description": "Resource content",
+          "type": "string"
+        }
+      }
+    },
+    "Authentication": {
+      "required": [
+        "username",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "grant_type": {
+          "type": "string",
+          "enum": [
+            "password"
+          ]
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "courseIdPath": {
+      "in": "path",
+      "name": "courseId",
+      "type": "integer",
+      "minimum": 1,
+      "required": true
+    },
+    "studentIdPath": {
+      "in": "path",
+      "name": "studentId",
+      "type": "integer",
+      "minimum": 1,
+      "required": true
+    },
+    "sessionIdPath": {
+      "in": "path",
+      "name": "sessionId",
+      "type": "integer",
+      "minimum": 1,
+      "required": true
+    },
+    "resourceIdPath": {
+      "in": "path",
+      "name": "resourceId",
+      "type": "integer",
+      "minimum": 1,
+      "required": true
+    },
+    "technologyQuery": {
+      "in": "query",
+      "name": "technology",
+      "type": "string",
+      "enum": [
+        "js",
+        "php",
+        "java",
+        "android",
+        ".net"
+      ]
+    },
+    "limitQuery": {
+      "in": "query",
+      "name": "limit",
+      "type": "integer",
+      "default": 10
+    },
+    "startIndexQuery": {
+      "in": "query",
+      "name": "startIndex",
+      "type": "integer",
+      "default": 0
+    },
+    "studentBody": {
+      "in": "body",
+      "name": "student",
+      "schema": {
+        "$ref": "#/definitions/Student"
+      }
+    },
+    "studentUpdateBody": {
+      "in": "body",
+      "name": "student",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2
+          },
+          "phone": {
+            "type": "string"
+          },
+          "currentOccupation": {
+            "type": "string"
+          },
+          "availableForHire": {
+            "type": "boolean"
+          },
+          "hasLaptop": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "authenticationBody": {
+      "in": "body",
+      "name": "authentication",
+      "schema": {
+        "$ref": "#/definitions/Authentication"
+      }
+    },
+    "emailValidationBody": {
+      "in": "body",
+      "name": "validation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Validation code",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "resetPasswordConfirmBody": {
+      "in": "body",
+      "name": "confirmation",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Validation code",
+            "type": "string"
+          },
+          "newPassword": {
+            "description": "New password",
+            "type": "string",
+            "format": "password",
+            "maxLength": 64,
+            "minLength": 4
+          }
+        }
+      }
+    }
+  }
+}
