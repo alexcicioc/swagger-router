@@ -2,7 +2,7 @@
   "name": "alexcicioc/swagger-router",
   "type": "library",
   "require": {
-    "php": ">=7.3.0",
+    "php": ">=7.2.0",
     "guzzlehttp/psr7": "^1.5",
     "league/oauth2-server": "^7.4"
   },
