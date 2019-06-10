@@ -4,6 +4,9 @@ Swagger Router handles routing, parameter type/format transformation, request va
 
 It's currently 85% open api 2.0 compliant (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) and not properly tested, so use it at your own risk.
 
+## Install via composer:
+``composer require alexcicioc/swagger-router``
+
 # Sample usage:
 
 ```php
