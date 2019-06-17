@@ -150,7 +150,7 @@ class SpecParser implements MiddlewareInterface
         } elseif (isset($object->schema->{'$ref'})) {
             $object = $this->getRef($object->schema->{'$ref'});
         } elseif (isset($object->schema->properties)) {
-            $object->properties = $object->schema->properties;
+            $object = $object->schema;
         }
 
         foreach ($object as $key => $value) {
