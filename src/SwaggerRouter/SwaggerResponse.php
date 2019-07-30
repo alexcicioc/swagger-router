@@ -8,10 +8,7 @@ use GuzzleHttp\Psr7\Response;
 class SwaggerResponse extends Response
 {
     use MessageTrait;
-    /** @var string */
-    public $reasonPhrase;
     public $rawBody = '';
-
 
     public function withRawBody($body)
     {
