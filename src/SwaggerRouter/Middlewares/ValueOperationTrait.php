@@ -9,18 +9,37 @@ trait ValueOperationTrait
     protected function applySchemaTransformations(Schema $schema, &$value)
     {
         $this->transformValue($value, $schema);
-        $this->applyDefaultValue($value, $schema->default);
-        $this->transformByFormat($value, $schema->format);
+        $schema->default && $this->applyDefaultValue($value, $schema->default);
+        $schema->format && $this->transformByFormat($value, $schema->format);
+        $schema->collectionFormat && $this->transformByCollectionFormat($value, $schema->collectionFormat);
     }
 
-    private function transformObject(Schema $schema, &$value)
+    private function transformByCollectionFormat(&$value, string $collectionFormat): void
+    {
+        switch ($collectionFormat) {
+            case 'csv':
+                $value = explode(',', $value);
+                break;
+            case 'ssv':
+                $value = explode(' ', $value);
+                break;
+            case 'tsv':
+                $value = explode("\t", $value);
+                break;
+            case 'pipes':
+                $value = explode("|", $value);
+                break;
+        }
+    }
+
+    private function transformObject(Schema $schema, &$value): void
     {
         foreach ($schema->properties as $propertyName => $property) {
             $this->applySchemaTransformations(new Schema($property), $value->{$propertyName});
         }
     }
 
-    private function transformArray(Schema $schema, &$value)
+    private function transformArray(Schema $schema, &$value): void
     {
         if ($schema->items && is_array($value)) {
             $itemsSchema = new Schema($schema->items);
