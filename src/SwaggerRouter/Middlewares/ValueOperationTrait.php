@@ -9,13 +9,18 @@ trait ValueOperationTrait
     protected function applySchemaTransformations(Schema $schema, &$value)
     {
         $this->transformValue($value, $schema);
-        $schema->default && $this->applyDefaultValue($value, $schema->default);
-        $schema->format && $this->transformByFormat($value, $schema->format);
+        $this->applyDefaultValue($value, $schema->default);
+        $this->transformByFormat($value, $schema->format);
         $schema->collectionFormat && $this->transformByCollectionFormat($value, $schema->collectionFormat);
     }
 
     private function transformByCollectionFormat(&$value, string $collectionFormat): void
     {
+        if (strlen($value) === 0) {
+            $value = null;
+            return;
+        }
+
         switch ($collectionFormat) {
             case 'csv':
                 $value = explode(',', $value);
@@ -30,7 +35,7 @@ trait ValueOperationTrait
                 $value = explode("|", $value);
                 break;
             default:
-                $value = [];
+                $value = null;
                 break;
         }
     }
