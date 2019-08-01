@@ -29,6 +29,9 @@ trait ValueOperationTrait
             case 'pipes':
                 $value = explode("|", $value);
                 break;
+            default:
+                $value = [];
+                break;
         }
     }
 
