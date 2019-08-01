@@ -242,7 +242,7 @@ class Validations
      * @param string $parameterName
      * @throws SchemaValidationException
      */
-    public static function pattern(string $pattern, string $value, string $parameterName)
+    public static function pattern(string $value, string $pattern, string $parameterName)
     {
         if (@preg_match("/$pattern/", $value) !== 1) {
             throw new SchemaValidationException(
