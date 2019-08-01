@@ -221,7 +221,6 @@ class Validations
         }
     }
 
-
     /**
      * @param $file
      * @param $mimeType
@@ -233,6 +232,21 @@ class Validations
         if ($file->getClientMediaType() !== $mimeType) {
             throw new SchemaValidationException(
                 "Unsupported mime type " . $file->getClientMediaType() . " for $parameterName"
+            );
+        }
+    }
+
+    /**
+     * @param string $pattern
+     * @param string $value
+     * @param string $parameterName
+     * @throws SchemaValidationException
+     */
+    public static function pattern(string $pattern, string $value, string $parameterName)
+    {
+        if (@preg_match("/$pattern/", $value) !== 1) {
+            throw new SchemaValidationException(
+                "Value does not match pattern $pattern for $parameterName"
             );
         }
     }

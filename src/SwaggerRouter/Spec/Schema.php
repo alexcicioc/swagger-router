@@ -17,6 +17,8 @@ namespace Alexcicioc\SwaggerRouter\Spec;
  * @property int|null $maximum
  * @property int|null $format
  * @property object|null $items
+ * @property object|null $pattern
+ * @property object|null $x-mimetype
  */
 class Schema
 {

@@ -13,7 +13,7 @@ trait ParameterValidationTrait
     {
         return [
             'type', 'required', 'properties', 'enum', 'maxLength', 'minLength',
-            'minimum', 'maximum', 'format', 'items', 'x-mimetype'
+            'minimum', 'maximum', 'format', 'items', 'x-mimetype', 'pattern'
         ];
     }
 
@@ -62,6 +62,9 @@ trait ParameterValidationTrait
                 break;
             case 'x-mimetype':
                 Validations::mimeType($value, $schema->{'x-mimetype'}, $parameterName);
+                break;
+            case 'pattern':
+                Validations::pattern($value, $schema->pattern, $parameterName);
                 break;
         }
     }
@@ -151,9 +154,6 @@ trait ParameterValidationTrait
     public function validateParam($value, Schema $schema, string $parameterName)
     {
         $supportedValidations = self::getSupportedValidations();
-        if ($value === null) {
-            $supportedValidations = ['required'];
-        }
 
         foreach ($supportedValidations as $validationType) {
             if ($schema->{$validationType} !== null) {

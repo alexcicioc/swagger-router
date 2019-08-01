@@ -1,7 +1,7 @@
 {
   "name": "alexcicioc/swagger-router",
   "type": "library",
-  "description": "Handles routing and request/response validation",
+  "description": "Handles routing and request/response validation as defined in an OpenApi spec",
   "require": {
     "php": ">=7.2.0",
     "guzzlehttp/psr7": "^1.5",
