@@ -155,6 +155,10 @@ trait ParameterValidationTrait
     {
         $supportedValidations = self::getSupportedValidations();
 
+        if ($value === null) {
+            $supportedValidations = ['required'];
+        }
+
         foreach ($supportedValidations as $validationType) {
             if ($schema->{$validationType} !== null) {
                 $this->validate($validationType, $value, $schema, $parameterName);
