@@ -229,7 +229,8 @@ class Validations
      */
     public static function mimeType(UploadedFile $file, string $mimeType, string $parameterName)
     {
-        if ($file->getClientMediaType() !== $mimeType) {
+        $mimeType = explode(',', $mimeType);
+        if (in_array($file->getClientMediaType(), $mimeType)) {
             throw new SchemaValidationException(
                 "Unsupported mime type " . $file->getClientMediaType() . " for $parameterName"
             );
