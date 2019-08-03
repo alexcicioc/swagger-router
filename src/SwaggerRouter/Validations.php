@@ -157,7 +157,7 @@ class Validations
         }
     }
 
-    public static function isValidIsoDate($date)
+    public static function isValidIsoDate($date): bool
     {
         if (preg_match(Patterns::EXTRACT_ISO_DATE_PARTS, $date, $parts) == true) {
             $time = gmmktime(0, 0, 0, $parts[2], $parts[3], $parts[1]);
@@ -172,7 +172,7 @@ class Validations
         return false;
     }
 
-    public static function isValidIsoDateTime($date)
+    public static function isValidIsoDateTime($date): bool
     {
         if (preg_match(Patterns::EXTRACT_ISO_DATE_TIME_PARTS, $date, $parts) == true) {
             $time = gmmktime($parts[4], $parts[5], $parts[6], $parts[2], $parts[3], $parts[1]);
@@ -227,10 +227,10 @@ class Validations
      * @param $parameterName
      * @throws SchemaValidationException
      */
-    public static function mimeType(UploadedFile $file, string $mimeType, string $parameterName)
+    public static function mimeType(UploadedFile $file, string $mimeType, string $parameterName): void
     {
-        $mimeType = explode(',', $mimeType);
-        if (in_array($file->getClientMediaType(), $mimeType)) {
+        $mimeTypes = explode(',', $mimeType);
+        if (!in_array($file->getClientMediaType(), $mimeTypes, true)) {
             throw new SchemaValidationException(
                 "Unsupported mime type " . $file->getClientMediaType() . " for $parameterName"
             );
@@ -243,7 +243,7 @@ class Validations
      * @param string $parameterName
      * @throws SchemaValidationException
      */
-    public static function pattern(string $value, string $pattern, string $parameterName)
+    public static function pattern(string $value, string $pattern, string $parameterName): void
     {
         if (@preg_match("/$pattern/", $value) !== 1) {
             throw new SchemaValidationException(
