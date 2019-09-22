@@ -57,7 +57,7 @@ class ResponseValidator implements MiddlewareInterface
             throw new SchemaValidationException("Unknown status code $statusCode for $operation->operationId");
         }
 
-        if ($this->response->rawBody) {
+        if ($this->response->rawBody && $schema->properties) {
             $this->validateProperties(
                 $this->response->rawBody,
                 $schema->properties,
