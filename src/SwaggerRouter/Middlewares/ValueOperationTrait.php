@@ -71,7 +71,7 @@ trait ValueOperationTrait
         $sanitizeStrings = $this->sanitizeStrings ?? false;
 
         if ($value !== null) {
-            if (!$schema->type && is_object($value)) {
+            if (!$schema->type && is_object($value) && $schema->properties) {
                 $schema->type = 'object';
             }
 
