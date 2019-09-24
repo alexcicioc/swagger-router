@@ -35,12 +35,10 @@ class Schema
         return $this->schema->{$name} ?? null;
     }
 
-
     public function isObject(): bool
     {
         return is_object($this->properties);
     }
-
 
     public function getRequiredProperties(): array
     {

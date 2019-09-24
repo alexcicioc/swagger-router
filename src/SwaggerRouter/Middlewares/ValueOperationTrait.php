@@ -42,8 +42,10 @@ trait ValueOperationTrait
 
     private function transformObject(Schema $schema, &$value): void
     {
-        foreach ($schema->properties as $propertyName => $property) {
-            $this->applySchemaTransformations(new Schema($property), $value->{$propertyName});
+        if ($schema->properties) {
+            foreach ($schema->properties as $propertyName => $property) {
+                $this->applySchemaTransformations(new Schema($property), $value->{$propertyName});
+            }
         }
     }
 
