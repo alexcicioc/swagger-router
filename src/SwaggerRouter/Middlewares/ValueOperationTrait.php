@@ -95,6 +95,11 @@ trait ValueOperationTrait
                     }
                     break;
                 case 'boolean':
+                    // var_dump((bool)"false"); => bool(true)
+                    if ($value === 'false') {
+                        $value = false;
+                        break;
+                    }
                     $value = (bool)$value == $value ? (bool)$value : $value;
                     break;
                 case 'object':
