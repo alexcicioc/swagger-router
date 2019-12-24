@@ -10,7 +10,7 @@ class SwaggerResponse extends Response
     use MessageTrait;
     public $rawBody = '';
 
-    public function withRawBody($body)
+    public function withRawBody($body): self
     {
         $new = clone $this;
         $new->rawBody = $body;
@@ -18,10 +18,18 @@ class SwaggerResponse extends Response
     }
 
     /**
-     * @param $body
-     * @return SwaggerResponse
+     * Needed to be more IDE friendly
+     *
+     * @param int $code
+     * @param string $reasonPhrase
+     * @return self
      */
-    public function body($body): SwaggerResponse
+    public function withStatus($code, $reasonPhrase = ''): self
+    {
+        return parent::withStatus($code, $reasonPhrase);
+    }
+
+    public function body($body): self
     {
         if (is_object($body) || is_array($body)) {
             return $this

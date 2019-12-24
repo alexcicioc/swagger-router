@@ -12,13 +12,6 @@ class ParamsHandler implements MiddlewareInterface
     use ValueOperationTrait;
     /** @var SwaggerRequest */
     private $request;
-    /** @var bool */
-    private $sanitizeStrings;
-
-    public function __construct(bool $sanitizeStrings = true)
-    {
-        $this->sanitizeStrings = $sanitizeStrings;
-    }
 
     /**
      * @param SwaggerRequest $request

@@ -70,8 +70,6 @@ trait ValueOperationTrait
      */
     private function transformValue(&$value, Schema $schema): void
     {
-        $sanitizeStrings = $this->sanitizeStrings ?? false;
-
         if ($value !== null) {
             if (!$schema->type && is_object($value) && $schema->properties) {
                 $schema->type = 'object';
@@ -80,9 +78,6 @@ trait ValueOperationTrait
             switch ($schema->type) {
                 case 'string':
                     $value = (string)$value == $value ? (string)$value : $value;
-                    if ($sanitizeStrings) {
-                        $value = htmlentities($value);
-                    }
                     break;
                 case 'integer':
                     $value = is_numeric($value) && (int)$value == $value ? (int)$value : $value;
