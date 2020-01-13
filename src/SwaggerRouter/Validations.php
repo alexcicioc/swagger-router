@@ -48,8 +48,9 @@ class Validations
     public static function type($value, string $type, string $parameterName): void
     {
         if (!self::isValidType($type, $value)) {
+            $encodedValue = json_encode($value);
             throw new SchemaValidationException(
-                "Parameter '$parameterName' with type '$type' didn't match parameter value '$value'"
+                "Parameter '$parameterName' with type '$type' didn't match parameter value '$encodedValue'"
             );
         }
     }

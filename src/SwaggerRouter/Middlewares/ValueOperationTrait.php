@@ -8,9 +8,15 @@ trait ValueOperationTrait
 {
     protected function applySchemaTransformations(Schema $schema, &$value)
     {
-        $this->transformValue($value, $schema);
-        $this->applyDefaultValue($value, $schema->default);
-        $this->transformByFormat($value, $schema->format);
+        if ($value !== null) {
+            if (is_scalar($value)) {
+                $this->transformPrimitives($value, $schema);
+            } else {
+                $this->transformCompositeTypes($value, $schema);
+            }
+            $this->applyDefaultValue($value, $schema->default);
+            $this->transformByFormat($value, $schema->format);
+        }
         $schema->collectionFormat && $this->transformByCollectionFormat($value, $schema->collectionFormat);
     }
 
@@ -68,42 +74,47 @@ trait ValueOperationTrait
      * @param $value
      * @param Schema $schema
      */
-    private function transformValue(&$value, Schema $schema): void
-    {
-        if ($value !== null) {
-            if (!$schema->type && is_object($value) && $schema->properties) {
-                $schema->type = 'object';
-            }
 
-            switch ($schema->type) {
-                case 'string':
-                    $value = (string)$value == $value ? (string)$value : $value;
+    private function transformCompositeTypes(&$value, Schema $schema): void
+    {
+        if (!$schema->type && is_object($value) && $schema->properties) {
+            $schema->type = 'object';
+        }
+
+        switch ($schema->type) {
+            case 'object':
+                $this->transformObject($schema, $value);
+                break;
+            case 'array':
+                $this->transformArray($schema, $value);
+                break;
+        }
+    }
+
+    private function transformPrimitives(&$value, Schema $schema): void
+    {
+        switch ($schema->type) {
+            case 'string':
+                $value = (string)$value == $value ? (string)$value : $value;
+                break;
+            case 'integer':
+                $value = is_numeric($value) && (int)$value == $value ? (int)$value : $value;
+                break;
+            case 'number':
+                if (is_numeric($value)) {
+                    $intVal = (int)$value == $value ? (int)$value : $value;
+                    $floatVal = (float)$value == $value ? (float)$value : $value;
+                    $value = is_integer($intVal) ? $intVal : $floatVal;
+                }
+                break;
+            case 'boolean':
+                // var_dump((bool)"false"); => bool(true)
+                if ($value === 'false') {
+                    $value = false;
                     break;
-                case 'integer':
-                    $value = is_numeric($value) && (int)$value == $value ? (int)$value : $value;
-                    break;
-                case 'number':
-                    if (is_numeric($value)) {
-                        $intVal = (int)$value == $value ? (int)$value : $value;
-                        $floatVal = (float)$value == $value ? (float)$value : $value;
-                        $value = is_integer($intVal) ? $intVal : $floatVal;
-                    }
-                    break;
-                case 'boolean':
-                    // var_dump((bool)"false"); => bool(true)
-                    if ($value === 'false') {
-                        $value = false;
-                        break;
-                    }
-                    $value = (bool)$value == $value ? (bool)$value : $value;
-                    break;
-                case 'object':
-                    $this->transformObject($schema, $value);
-                    break;
-                case 'array':
-                    $this->transformArray($schema, $value);
-                    break;
-            }
+                }
+                $value = (bool)$value == $value ? (bool)$value : $value;
+                break;
         }
     }
 
