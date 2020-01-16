@@ -232,3 +232,65 @@ class Courses
 ```
 # Sample spec:
 https://github.com/alexcicioc/swagger-router/blob/master/sample-spec.json
+
+
+# Laravel compatibility
+Swagger Router's middlewares are not compatible with Laravel's yet, however there's a workaround this.
+
+Here's a sample Laravel middleware that calls the swagger router (not properly tested, may have some side effects):
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Alexcicioc\SwaggerRouter\Exceptions\HttpException;
+use Alexcicioc\SwaggerRouter\Middlewares\ParamsHandler;
+use Alexcicioc\SwaggerRouter\Middlewares\RequestValidator;
+use Alexcicioc\SwaggerRouter\Middlewares\ResponseHandler;
+use Alexcicioc\SwaggerRouter\Middlewares\ResponseValidator;
+use Alexcicioc\SwaggerRouter\Middlewares\Router;
+use Alexcicioc\SwaggerRouter\Middlewares\RouteValidator;
+use Alexcicioc\SwaggerRouter\Middlewares\SpecParser;
+use Alexcicioc\SwaggerRouter\Middlewares\SwaggerRawHandler;
+use Alexcicioc\SwaggerRouter\SwaggerRequest;
+use Alexcicioc\SwaggerRouter\SwaggerResponse;
+use Alexcicioc\SwaggerRouter\SwaggerRouter;
+use Closure;
+use Illuminate\Http\Request;
+
+class LaravelSwaggerRouter
+{
+    public function handle(Request $request, Closure $next)
+    {
+        try {
+            $app = new SwaggerRouter();
+            // Validates and extracts the information from your swagger spec
+            $app->use(new SpecParser('/var/www/php/specs/spec.json')); # Path to your spec
+            // Optional - Handles the /swagger endpoint that exposes the spec to frontend apps
+            $app->use(new SwaggerRawHandler());
+            // Validates the called route, http method and content type
+            $app->use(new RouteValidator());
+            // Handles extracting the parameters from the request and formatting them
+            $app->use(new ParamsHandler());
+            // Optional - Handles validating the request parameters
+            $app->use(new RequestValidator());
+            // Routes the request to it's specific controller (given by x-swagger-router-controller)
+            $app->use(new Router('\App\Http\Controllers')); # Controllers namespace (must be PSR-4 compliant)
+            // Handles formatting the response
+            $app->use(new ResponseHandler());
+            // Optional - Handles validating the response
+            $app->use(new ResponseValidator());
+
+            $swaggerRequest = SwaggerRequest::fromGlobals();
+
+            $swaggerResponse = new SwaggerResponse(); // extends PSR-7 Response
+            $response = $app($swaggerRequest, $swaggerResponse);
+
+            return response()->json($response->rawBody, $response->getStatusCode(), $response->getHeaders());
+        } catch (HttpException $e) {
+            return response()->json((object)['message' => $e->getMessage()], $e->getCode());
+        }
+    }
+}
+```
