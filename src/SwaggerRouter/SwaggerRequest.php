@@ -43,11 +43,12 @@ class SwaggerRequest extends ServerRequest
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAuthenticatedUserId()
     {
-        return $this->getAttribute('oauth_user_id');
+        return $this->getAttribute('oauth_user_id') ?
+            (int)$this->getAttribute('oauth_user_id') : null;
     }
 
     /**
