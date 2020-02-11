@@ -45,7 +45,7 @@ class SwaggerRequest extends ServerRequest
     /**
      * @return int
      */
-    public function getAuthenticatedUserId(): int
+    public function getAuthenticatedUserId()
     {
         return $this->getAttribute('oauth_user_id');
     }
