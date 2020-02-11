@@ -8,15 +8,17 @@ trait ValueOperationTrait
 {
     protected function applySchemaTransformations(Schema $schema, &$value)
     {
-        if ($value !== null) {
+        if ($value === null) {
+            $this->applyDefaultValue($value, $schema->default);
+        } else {
             if (is_scalar($value)) {
                 $this->transformPrimitives($value, $schema);
             } else {
                 $this->transformCompositeTypes($value, $schema);
             }
-            $this->applyDefaultValue($value, $schema->default);
             $this->transformByFormat($value, $schema->format);
         }
+
         $schema->collectionFormat && $this->transformByCollectionFormat($value, $schema->collectionFormat);
     }
 
@@ -120,7 +122,7 @@ trait ValueOperationTrait
 
     private function applyDefaultValue(&$value, $default): void
     {
-        if ($value === null && $default !== null) {
+        if ($default !== null) {
             $value = $default;
         }
     }
