@@ -212,7 +212,7 @@ class Courses
         
         return $response
                 ->withStatus(200)
-                ->body((object)['results' => $results));
+                ->body((object)['results' => $results]);
 
     }
     
