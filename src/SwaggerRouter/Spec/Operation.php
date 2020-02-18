@@ -13,9 +13,13 @@ class Operation
     public $responses;
     /** @var array */
     public $consumes;
+    /** @var array */
+    public $middlewares;
+
 
     public function __construct(
-        string $operationId, array $parameters, array $security, array $consumes, array $responses
+        string $operationId, array $parameters, array $security, array $consumes, array $responses,
+        array $middlewares
     )
     {
         $this->operationId = $operationId;
@@ -23,5 +27,6 @@ class Operation
         $this->security = $security;
         $this->responses = $responses;
         $this->consumes = $consumes;
+        $this->middlewares = $middlewares;
     }
 }

@@ -95,13 +95,15 @@ class SpecParser implements MiddlewareInterface
             $security = $operation->security ?? [];
             $responses = $this->extractResponses($operation);
             $consumes = $operation->consumes ?? [];
+            $middlewares = $operation->{"x-swagger-router-middlewares"} ?? [];
 
             $operations[$httpMethod] = new Operation(
                 $operation->operationId,
                 $parameters,
                 $security,
                 $consumes,
-                $responses
+                $responses,
+                $middlewares
             );
         }
 
